@@ -10,6 +10,8 @@ public class DevcointainerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DevcointainerApplication.class, args);
+
+		System.out.println("From remote GitHub workspace :)");
 	}
 
 }
