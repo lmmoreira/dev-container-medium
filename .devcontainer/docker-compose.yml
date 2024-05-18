@@ -1,0 +1,68 @@
+version: '3.8'
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  default:
+    name: dev-container-medium-network
+
+services:
+  dev-container-medium:
+    container_name: dev-container-medium-env
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      # NOTE: POSTGRES_DB/USER/PASSWORD should match values in db container
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_DB: postgres
+        POSTGRES_HOSTNAME: postgresdb
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+
+  dev-container-medium-db:
+    container_name: dev-container-medium-postgresdb
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      # NOTE: POSTGRES_DB/USER/PASSWORD should match values in app container
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+
+  dev-container-medium-redis-db:
+    container_name: dev-container-medium-redis
+    image: redis:6.2-alpine
+    command: redis-server --requirepass mypass
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+
+  dev-container-medium-rabbitmq:
+    container_name: dev-container-medium-rabbitmq
+    image: bitnami/rabbitmq:3.10.25
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    environment:
+      RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS: "true"
+      RABBITMQ_USERNAME: user
+      RABBITMQ_PASSWORD: bitnami
+      RABBITMQ_NODE_PORT_NUMBER: 5672
+      RABBITMQ_MANAGEMENT_PORT_NUMBER: 15672
+    ports:
+      - "5672:5672"
+      - "15672:15672"

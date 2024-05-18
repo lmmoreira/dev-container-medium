@@ -1,0 +1,17 @@
+{
+	"name": "Dev Container Medium Environment",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "dev-container-medium",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {}
+  },
+  "forwardPorts": [5432, 8080, 6379, 5672, 15672],
+  "postCreateCommand": "bash ./.devcontainer/install-plugins.sh",
+  "customizations" : {
+    "jetbrains" : {
+      "backend" : "IntelliJ"
+    }
+  },
+  // "remoteUser": "root"
+}
